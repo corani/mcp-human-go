@@ -13,6 +13,7 @@ type Config struct {
 	Logger  *slog.Logger
 	SsePort int `env:"SSE_PORT" envDefault:"8989"`
 	WebPort int `env:"WEB_PORT" envDefault:"8990"`
+	MaxWait int `env:"MAX_WAIT" envDefault:"60"` // seconds
 }
 
 func xdgConfig() string {

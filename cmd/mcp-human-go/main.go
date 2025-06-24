@@ -12,6 +12,10 @@ import (
 	"time"
 
 	"github.com/corani/mcp-human-go/internal/config"
+	"github.com/corani/mcp-human-go/internal/human"
+	"github.com/corani/mcp-human-go/internal/memory"
+	"github.com/corani/mcp-human-go/internal/tools"
+	"github.com/corani/mcp-human-go/internal/web"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -63,6 +67,12 @@ func main() {
 		server.WithHooks(hooks),
 	)
 
+	mem := memory.NewMemoryDB()
+	api := web.NewAPI(conf, mem)
+	ask := human.NewAsk(conf, mem)
+
+	tools.Register(srv, ask)
+
 	// TODO(daniel): probably shouldn't use a lambda here, and we should check the request params.
 	srv.AddPrompt(mcp.NewPrompt("instructions"),
 		func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
@@ -91,6 +101,18 @@ func main() {
 			return []mcp.ResourceContents{contents}, nil
 		})
 
+	go func() {
+		logger.Info("Starting web server",
+			slog.String("address", fmt.Sprintf("http://localhost:%d", conf.WebPort)))
+		if err := api.Start(); err != nil {
+			logger.Error("Failed to start web server",
+				slog.String("error", err.Error()),
+			)
+		}
+		logger.Info("Web server stopped")
+	}()
+	defer api.Shutdown()
+
 	sse := server.NewSSEServer(srv,
 		server.WithSSEEndpoint("/mcp"),
 	)
@@ -105,6 +127,8 @@ func main() {
 				slog.String("error", err.Error()),
 			)
 		}
+
+		logger.Info("SSE server stopped")
 	}()
 
 	if err := server.ServeStdio(srv); !errors.Is(err, context.Canceled) {

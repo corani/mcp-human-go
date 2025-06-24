@@ -1,5 +1,7 @@
-Provided are various tools to request information from humans. Use the 'ask_human' tool 
-when you need information that only a human would know, such as personal preferences,
-project-specific context, local environment details, or any information that is not
-publicly available or documented. The human will be notified of your request and their 
-response will be returned to you.
+Provided are various tools to request information from a human. Use the 'ask_human' tool 
+when you need information that only a human would know, such as project-specific context, 
+local environment details, or any information that is not publicly available or documented. 
+The human will be notified of your request and their response will be returned to you.
+
+Note: don't use this tool to clarify user intent, but only to find information that neither
+you nor the user have readily available.
