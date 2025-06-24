@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/corani/mcp-human-go/internal/human"
@@ -35,12 +34,13 @@ func newAskHuman(ask *human.Ask) Tool {
 
 func (c *askHumanTool) Schema() mcp.Tool {
 	return mcp.NewTool("ask_human",
-		mcp.WithDescription("Ask a human a question that only they would know, such as project-specific context, local environment details, or non-public information and wait for their response."),
+		mcp.WithDescription("Ask a human a question only if neither you nor the user can answer it, such as project-specific context, local environment details, or non-public information. Do NOT use this tool to clarify, disambiguate, or follow up on the user's intent or question. Always ask the user directly if you need clarification. Use this tool only for facts unavailable to both you and the user."),
 		mcp.WithString("question",
-			mcp.Description("The question to ask the human, use markdown formatting for clarity"),
+			mcp.Description("The question to ask the human. Use markdown formatting for clarity. Do not use this for clarifications or follow-ups; ask the user directly instead."),
 			mcp.Required()),
 		mcp.WithString("context",
-			mcp.Description("Context for the question, if any")),
+			mcp.Description("Context for the question, if any."),
+			mcp.Required()),
 	)
 }
 
@@ -63,13 +63,4 @@ func (c *askHumanTool) Handler(ctx context.Context, request mcp.CallToolRequest)
 
 func toError(err error) (*mcp.CallToolResult, error) {
 	return mcp.NewToolResultError(err.Error()), nil
-}
-
-func toJSON(v any) (*mcp.CallToolResult, error) {
-	out, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	return mcp.NewToolResultText(string(out)), nil
 }

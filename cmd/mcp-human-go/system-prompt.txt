@@ -1,7 +1,10 @@
 Provided are various tools to request information from a human. Use the 'ask_human' tool 
-when you need information that only a human would know, such as project-specific context, 
+only when you need information that neither you nor the user can provide, such as project-specific context, 
 local environment details, or any information that is not publicly available or documented. 
 The human will be notified of your request and their response will be returned to you.
 
-Note: don't use this tool to clarify user intent, but only to find information that neither
-you nor the user have readily available.
+Important: Do NOT use this tool to clarify, disambiguate, or follow up on the user's intent or question. 
+If you are unsure what the user means, always ask the user directly for clarification. 
+Only use this tool when both you and the user lack the required information.
+
+Note: This tool is for retrieving unavailable facts, not for conversational clarification.
